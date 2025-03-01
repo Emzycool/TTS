@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>clifai TTS</title>
+  <style>
+    /* Base reset and typography */
+    body {
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    /* Container styling for a premium card look */
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    /* Header styling with a glowing text effect */
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #0078d7;
+      text-shadow: 0 0 8px rgba(0, 120, 215, 0.6);
+    }
+    /* User Guide dropdown styling using details/summary */
+    details {
+      margin-bottom: 20px;
+      background: #e7f3ff;
+      border: 1px solid #b3d7ff;
+      border-radius: 5px;
+      padding: 10px;
+      text-align: left;
+    }
+    summary {
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    details p, details ul {
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+    /* Input elements styling */
+    textarea,
+    select,
+    input[type="range"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    .range-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .range-label {
+      flex: 1;
+    }
+    .range-value {
+      width: 60px;
+      text-align: right;
+      margin-left: 10px;
+    }
+    /* Button styling with realistic glowing effects */
+    button {
+      background: linear-gradient(45deg, #0078d7, #00aaff);
+      border: none;
+      padding: 15px 30px;
+      font-size: 1em;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      margin: 5px;
+    }
+    button:hover {
+      box-shadow: 0 0 15px rgba(0, 120, 215, 0.8);
+      transform: scale(1.02);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    /* Download button styling */
+    .download-btn {
+      background: linear-gradient(45deg, #28a745, #3ecf8e);
+    }
+    /* Audio element styling */
+    audio {
+      width: 100%;
+      margin-top: 20px;
+    }
+    /* Conversion indicator styling */
+    #indicator {
+      display: none;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: #0078d7;
+    }
+    /* Responsive adjustments for mobile devices */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 2em;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>clifai TTS</h1>
+    
+    <!-- Collapsible User Guide -->
+    <details>
+      <summary>User Guide</summary>
+      <p>
+        Welcome to clifai TTS! To use this service:
+      </p>
+      <ul>
+        <li>Enter the text you want to convert into speech.</li>
+        <li>Select your desired voice and style.</li>
+        <li>Adjust the style degree, rate, and pitch as needed.</li>
+        <li>Click the <strong>Convert</strong> button to generate and preview the audio.</li>
+        <li>Once the audio is generated, use the download button to save the MP3 file.</li>
+      </ul>
+      <p>powered by Clifbook </p>
+    </details>
+    
+    <!-- Text input -->
+    <textarea id="text" rows="4" placeholder="Enter text to speak"></textarea>
+    
+    <!-- Voice selection dropdown -->
+    <select id="voiceSelect">
+      <option value="en-US-JennyNeural">English (US) - Jenny (Female)</option>
+      <option value="en-US-GuyNeural">English (US) - Guy (Male)</option>
+      <option value="en-GB-LibbyNeural">English (UK) - Libby (Female)</option>
+      <option value="en-GB-RyanNeural">English (UK) - Ryan (Male)</option>
+      <option value="en-AU-NatashaNeural">English (AU) - Natasha (Female)</option>
+      <option value="es-ES-ElviraNeural">Spanish (ES) - Elvira (Female)</option>
+      <option value="fr-FR-DeniseNeural">French (FR) - Denise (Female)</option>
+      <option value="de-DE-KatjaNeural">German (DE) - Katja (Female)</option>
+      <option value="ja-JP-NanamiNeural">Japanese (JP) - Nanami (Female)</option>
+      <option value="zh-CN-XiaoxiaoNeural">Chinese (CN) - Xiaoxiao (Female)</option>
+    </select>
+    
+    <!-- Style selection dropdown -->
+    <select id="styleSelect">
+      <option value="">Default</option>
+      <option value="cheerful">Cheerful</option>
+      <option value="sad">Sad</option>
+      <option value="angry">Angry</option>
+      <option value="fearful">Fearful</option>
+      <option value="disgruntled">Disgruntled</option>
+    </select>
+    
+    <!-- Style Degree Slider -->
+    <div class="range-container">
+      <span class="range-label">Style Degree (0-1):</span>
+      <input type="range" id="styleDegree" min="0" max="1" step="0.1" value="1">
+      <span class="range-value" id="styleDegreeValue">1</span>
+    </div>
+    
+    <!-- Rate Slider -->
+    <div class="range-container">
+      <span class="range-label">Rate (%):</span>
+      <input type="range" id="rate" min="-50" max="50" step="5" value="0">
+      <span class="range-value" id="rateValue">0%</span>
+    </div>
+    
+    <!-- Pitch Slider -->
+    <div class="range-container">
+      <span class="range-label">Pitch (%):</span>
+      <input type="range" id="pitch" min="-10" max="10" step="1" value="0">
+      <span class="range-value" id="pitchValue">0%</span>
+    </div>
+    
+    <!-- Conversion Indicator -->
+    <div id="indicator">Converting...</div>
+    
+    <!-- Convert Button -->
+    <button id="speakBtn">Convert</button>
+    
+    <!-- Audio Preview -->
+    <audio id="audio" controls></audio>
+    
+    <!-- Download Button (hidden until audio is generated) -->
+    <button id="downloadBtn" class="download-btn" style="display: none;">Download Audio</button>
+  </div>
+  
+  <script>
+    // Microsoft Azure TTS API key and region
+    const subscriptionKey = '1cqztgzyP154SAU6yuh3eFokJM4yDtlmirBuUXEILRrdJ3NWqGbCJQQJ99BBACYeBjFXJ3w3AAAYACOGTMlX';
+    const region = 'eastus'; // Change if necessary
+
+    const speakBtn = document.getElementById('speakBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const audioElement = document.getElementById('audio');
+    const indicator = document.getElementById('indicator');
+
+    // Update displayed values for sliders
+    const styleDegreeInput = document.getElementById('styleDegree');
+    const styleDegreeValue = document.getElementById('styleDegreeValue');
+    styleDegreeInput.addEventListener('input', () => {
+      styleDegreeValue.textContent = styleDegreeInput.value;
+    });
+
+    const rateInput = document.getElementById('rate');
+    const rateValue = document.getElementById('rateValue');
+    rateInput.addEventListener('input', () => {
+      rateValue.textContent = rateInput.value + '%';
+    });
+
+    const pitchInput = document.getElementById('pitch');
+    const pitchValue = document.getElementById('pitchValue');
+    pitchInput.addEventListener('input', () => {
+      pitchValue.textContent = pitchInput.value + '%';
+    });
+
+    speakBtn.addEventListener('click', () => {
+      const text = document.getElementById('text').value.trim();
+      if (!text) {
+        alert('Please enter some text to speak.');
+        return;
+      }
+      const voice = document.getElementById('voiceSelect').value;
+      const style = document.getElementById('styleSelect').value;
+      const styleDegree = styleDegreeInput.value;
+      const rate = rateInput.value;
+      const pitch = pitchInput.value;
+
+      // Show conversion indicator
+      indicator.style.display = 'block';
+
+      // Build the SSML payload with prosody and additional attributes if provided
+      let ssml = `<speak version="1.0" xml:lang="en-US">`;
+      if (style !== "") {
+        ssml += `<voice xml:lang="en-US" xml:gender="Female" name="${voice}" style="${style}" styledegree="${styleDegree}">`;
+      } else {
+        ssml += `<voice xml:lang="en-US" xml:gender="Female" name="${voice}">`;
+      }
+      ssml += `<prosody rate="${rate}%" pitch="${pitch}%">`;
+      ssml += text;
+      ssml += `</prosody></voice></speak>`;
+
+      fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/ssml+xml',
+          'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3',
+          'Ocp-Apim-Subscription-Key': subscriptionKey
+        },
+        body: ssml
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('TTS request failed. Status: ' + response.status);
+        }
+        return response.arrayBuffer();
+      })
+      .then(arrayBuffer => {
+        const blob = new Blob([arrayBuffer], { type: 'audio/mp3' });
+        const audioUrl = URL.createObjectURL(blob);
+        audioElement.src = audioUrl;
+        audioElement.play();
+        // Hide conversion indicator
+        indicator.style.display = 'none';
+        // Show the download button and ensure cross-browser support
+        downloadBtn.style.display = 'inline-block';
+        downloadBtn.onclick = () => {
+          if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+            // For Internet Explorer
+            window.navigator.msSaveOrOpenBlob(blob, 'clifai_tts.mp3');
+          } else {
+            const a = document.createElement('a');
+            a.href = audioUrl;
+            a.download = 'clifai_tts.mp3';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+        };
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        indicator.style.display = 'none';
+        alert('An error occurred: ' + error.message);
+      });
+    });
+  </script>
+</body>
+</html>
